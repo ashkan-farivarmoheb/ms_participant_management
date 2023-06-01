@@ -6,7 +6,11 @@ plugins {
 
 group = 'com.tis'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17 // new
+    targetCompatibility = JavaVersion.VERSION_17 // new
+}
 
 repositories {
 	mavenCentral()
