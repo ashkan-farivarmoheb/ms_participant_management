@@ -25,9 +25,15 @@ jobs:
     - name: "Checkout Code"
       uses: actions/checkout@v3
 
-    - name: Set tag
-      id: vars
-      run: echo "::set-output name=tag::${GITHUB_REF#refs/*/}"
+    - name: Variables
+      id: variables
+      uses: actions/github-script@v3
+      with:
+        script: |
+          const tag = context.sha.substring(0,7)
+          const branch = context.ref.split('/').pop()
+          core.exportVariable('IMAGE_tag', tag);
+          core.exportVariable('REPOSITORY_NAME', branch);
 
     - name: Set up JDK 17
       uses: actions/setup-java@v3
@@ -51,22 +57,12 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: splitting branch name on slash
-      id: docker-tag
-      shell: bash
-      run: |
-        split=(${GITHUB_REF_NAME//\// })
-        index=$((${#split[@]}-1))
-        REPOSITORY_NAME=${split[$index]}
-        echo REPOSITORY_NAME=$REPOSITORY_NAME
-        echo "::set-output name=REPOSITORY_NAME"
-
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: $REPOSITORY_NAME
-        IMAGE_TAG: "git-${{ substring(github.sha,7) }}"
+        IMAGE_TAG: "git-$IMAGE_TAG}"
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
