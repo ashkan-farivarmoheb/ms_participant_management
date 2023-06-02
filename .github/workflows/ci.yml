@@ -51,12 +51,22 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: splitting branch name on slash
+      id: docker-tag
+      shell: bash
+      run: |
+        split=(${GITHUB_REF_NAME//\// })
+        index=$((${#split[@]}-1))
+        REPOSITORY_NAME=${split[$index]}
+        echo REPOSITORY_NAME=$REPOSITORY_NAME
+        echo "::set-output name=REPOSITORY_NAME"
+
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ github.repository }}
-        IMAGE_TAG: "git-${{ github.sha }}"
+        ECR_REPOSITORY: REPOSITORY_NAME
+        IMAGE_TAG: "git-${{ substring(github.sha,7) }}"
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
