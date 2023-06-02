@@ -32,9 +32,10 @@ jobs:
         script: |
           const tag = context.sha.substring(0,7)
           const branch = context.ref.split('/').pop()
+          const { owner, repo } = context.repo;
           core.exportVariable('BRANCH', branch);
-          core.exportVariable('IMAGE_TAG', tag);
-          core.exportVariable('REPOSITORY_NAME', branch);
+          core.exportVariable('IMAGE_TAG', branch-tag);
+          core.exportVariable('REPOSITORY_NAME', repo);
 
     - name: Set up JDK 17
       uses: actions/setup-java@v3
