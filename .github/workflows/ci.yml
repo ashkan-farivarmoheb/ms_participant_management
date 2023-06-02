@@ -34,6 +34,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
@@ -54,8 +55,7 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        # ECR_REPOSITORY: ${{ github.head_ref }}-${{ github.repository }}
-        ECR_REPOSITORY: "ms_participant_management"
+        ECR_REPOSITORY: ${{ github.repository }}
         IMAGE_TAG: ${{ steps.vars.outputs.tag }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
