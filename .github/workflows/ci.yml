@@ -20,14 +20,14 @@ jobs:
   ci:
     name: "Integration"
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    # if: startsWith(github.ref, 'refs/tags/')
     steps:
     - name: "Checkout Code"
       uses: actions/checkout@v3
 
-    # - name: Set tag
-    #   id: vars
-    #   run: echo "::set-output name=tag::${GITHUB_REF#refs/*/}"
+    - name: Set tag
+      id: vars
+      run: echo "::set-output name=tag::${GITHUB_REF#refs/*/}"
 
     - name: Set up JDK 17
       uses: actions/setup-java@v3
