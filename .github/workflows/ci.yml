@@ -32,7 +32,8 @@ jobs:
         script: |
           const tag = context.sha.substring(0,7)
           const branch = context.ref.split('/').pop()
-          core.exportVariable('IMAGE_tag', tag);
+          core.exportVariable('BRANCH', branch);
+          core.exportVariable('IMAGE_TAG', tag);
           core.exportVariable('REPOSITORY_NAME', branch);
 
     - name: Set up JDK 17
@@ -62,7 +63,7 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: $REPOSITORY_NAME
-        IMAGE_TAG: "git-$IMAGE_TAG}"
+        IMAGE_TAG: "$BRANCH-$IMAGE_TAG"
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
