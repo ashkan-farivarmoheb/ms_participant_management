@@ -1,13 +1,13 @@
-package com.tis.msparticipantmanagment;
+package com.tis.participant;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MsParticipantManagmentApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MsParticipantManagmentApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }

@@ -1,10 +1,10 @@
-package com.tis.msparticipantmanagment;
+package com.tis.ms;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MsParticipantManagmentApplicationTests {
+class ApplicationTests {
 
 	@Test
 	void contextLoads() {
