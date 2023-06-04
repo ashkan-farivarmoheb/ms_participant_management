@@ -2,11 +2,17 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.0'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id("com.avast.gradle.docker-compose") version "0.16.12"
+	
 }
+
+apply plugin: 'docker-compose'
 
 group = 'com.tis'
 
 sourceCompatibility = '17'
+targetCompatibility = '17'
+
 
 repositories {
 	mavenCentral()
@@ -22,4 +28,26 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+dockerCompose {
+	def dockerProperties = project.getProperties()
+	def keys = dockerProperties.findAll {it.key.contains("DOCKER_")}.collect { it.key }
+	def dockerEnvs = dockerProperties.subMap(keys)
+	
+	dockerEnvs.forEach({ key, value ->
+		println "$key=$value"
+		environment.put key, value
+	})
+	
+	useComposeFiles = ["src/main/docker/compose/test/docker-compose-test.yml"]
+	dockerComposeStopTimeout = java.time.Duration.ofSeconds(10)
+}
+
+task startTestEnvironment {
+	dependsOn += ['composeUp']
+}
+
+task stopTestEnvironment {
+	dependsOn += ['composeDown']
 }
