@@ -101,12 +101,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Verify EKS Deployment
-        id: verify-eks-deployment
+      - name: Get Pods
+        uses: actions-hub/kubectl@1.14.3
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.REPOSITORY_NAME }}
-          TAG: '${{ env.BRANCH }}-${{ env.TAG }}'
-          IMAGE_TAG: ${{ env.BRANCH }}-${{github.sha}}'
-        run: |
-          kubectl get all 
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        with:
+          args: get pods
