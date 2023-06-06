@@ -88,7 +88,7 @@ jobs:
     #     echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"  
   cd:
     name: "deployment"
-    needs: [integration]
+    needs: [ci]
     runs-on: ubuntu-latest
 
     steps:
