@@ -11,11 +11,11 @@ on:
   push:
     branches:
       - '^feature\/PM\-[\d\D]{1,64}' # feature branch like feature/PM-20-example-adsa
-      - '!master' # excludes master
+      - '!develop' # excludes master
   pull_request:
     branches:
       - '^feature\/PM\-[\d\D]{1,64}' # feature branch like feature/PM-20-example-adsa
-      - '!master' # excludes master
+      - '!develop' # excludes master
 
 permissions:
   contents: read
