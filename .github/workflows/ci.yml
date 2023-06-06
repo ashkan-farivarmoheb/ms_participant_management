@@ -109,4 +109,4 @@ jobs:
           TAG: '${{ env.BRANCH }}-${{ env.TAG }}'
           IMAGE_TAG: ${{ env.BRANCH }}-${{github.sha}}'
         run: |
-          kubctl get all 
+          kubectl get all 
