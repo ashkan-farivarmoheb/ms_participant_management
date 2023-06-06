@@ -1,0 +1,11 @@
+commonLabels:
+  app.kubernetes.io/genereted-by: TIS
+
+resources:
+  # Individual apps
+  - k8sdeployment.yml
+  - k8s/service.yml
+  - k8s/postgresql.yml
+  - k8s/prometheus-sm.yml
+
+patchesJson6902:

@@ -9,16 +9,20 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "develop" ]
+    branches:
+      - '^feature\/PM\-[\d\D]{1,64}' # feature branch like feature/PM-20-example-adsa
+      - '!master' # excludes master
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - '^feature\/PM\-[\d\D]{1,64}' # feature branch like feature/PM-20-example-adsa
+      - '!master' # excludes master
 
 permissions:
   contents: read
 
 jobs:
   ci:
-    name: "Integration"
+    name: "integration"
     runs-on: ubuntu-latest
     # if: startsWith(github.ref, 'refs/tags/')
     steps:
@@ -75,38 +79,18 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    # - name: Build, tag, and push image to Amazon ECR
-    #   id: build-image
-    #   env:
-    #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-    #     ECR_REPOSITORY: ${{ env.REPOSITORY_NAME }}
-    #     TAG: '${{ env.BRANCH }}-${{ env.TAG }}'
-    #     IMAGE_TAG: ${{ env.BRANCH }}-${{github.sha}}'
-    #   run: |
-    #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg JAR_FILE=$JAR_FILE .
-    #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-    #     echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"  
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ env.REPOSITORY_NAME }}
+        TAG: '${{ env.BRANCH }}-${{ env.TAG }}'
+        IMAGE_TAG: ${{ env.BRANCH }}-${{github.sha}}'
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg JAR_FILE=$JAR_FILE .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
   cd:
     name: "deployment"
     needs: [integration]
     runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Verify EKS Deployment
-        id: verify-eks-deployment
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.REPOSITORY_NAME }}
-          TAG: '${{ env.BRANCH }}-${{ env.TAG }}'
-          IMAGE_TAG: ${{ env.BRANCH }}-${{github.sha}}'
-        run: |
-          kubctl get all 

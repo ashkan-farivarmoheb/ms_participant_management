@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms_participant_managment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms_participant_managment
+      version: "v1"
+  template:
+    metadata:
+      labels:
+        app: ms_participant_managment
+        version: "v1"
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - ms_participant_managment
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      initContainers:
+        - name: init-ds
+          image: busybox:latest
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              while true
+              do
+                rt=$(nc -z -w 1 ms_participant_managment-postgresql 5432)
+                if [ $? -eq 0 ]; then
+                  echo "DB is UP"
+                  break
+                fi
+                echo "DB is not yet reachable;sleep for 10s before retry"
+                sleep 10
+              done
+      containers:
+        - name: ms_participant_managment-app
+          image: ms_participant_managment
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          ports:
+            - name: http
+              containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /management/health/readiness
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /management/health/liveness
+              port: http
+            initialDelaySeconds: 120

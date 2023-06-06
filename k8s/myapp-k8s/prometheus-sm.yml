@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ms_participant_managment-app
+  namespace: default
+  labels:
+    team: default
+spec:
+  selector:
+    matchLabels:
+      app: ms_participant_managment
+  endpoints:
+    - port: web
+      path: /prometheusMetrics

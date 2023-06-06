@@ -1,0 +1,19 @@
+{
+  "generator-jhipster": {
+    "appsFolders": ["myApp"],
+    "clusteredDbApps": {},
+    "directoryPath": "../",
+    "dockerPushCommand": "docker push",
+    "dockerRepositoryName": "",
+    "ingressDomain": "192.168.99.100.nip.io",
+    "ingressType": "nginx",
+    "istio": false,
+    "jwtSecretKey": "NWE0NTdjMzc2OGM1ZDQxOWUxMTA2ZGNiNTAxZmQ2ZmU3ZjU0YTc0MjJlZjA4MTdmYTExOTg4MzFiYzA2YTFjMTk3MTM1MGEzY2ZmY2ZlZWY1ZGU1YThlNGFhYTc3YmM2ZjVkYg==",
+    "kubernetesNamespace": "default",
+    "kubernetesServiceType": "Ingress",
+    "kubernetesStorageClassName": "",
+    "kubernetesUseDynamicStorage": true,
+    "monitoring": "prometheus",
+    "serviceDiscoveryType": false
+  }
+}
