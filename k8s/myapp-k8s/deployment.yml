@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ms_participant_managment
+  name: ms-participant-managment
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ms_participant_managment
+      app: ms-participant-managment
       version: "v1"
   template:
     metadata:
       labels:
-        app: ms_participant_managment
+        app: ms-participant-managment
         version: "v1"
     spec:
       affinity:
@@ -24,7 +24,7 @@ spec:
                     - key: app
                       operator: In
                       values:
-                        - ms_participant_managment
+                        - ms-participant-managment
                 topologyKey: kubernetes.io/hostname
               weight: 100
       initContainers:
@@ -36,7 +36,7 @@ spec:
             - |
               while true
               do
-                rt=$(nc -z -w 1 ms_participant_managment-postgresql 5432)
+                rt=$(nc -z -w 1 ms-participant-managment-postgresql 5432)
                 if [ $? -eq 0 ]; then
                   echo "DB is UP"
                   break
@@ -45,8 +45,8 @@ spec:
                 sleep 10
               done
       containers:
-        - name: ms_participant_managment-app
-          image: ms_participant_managment
+        - name: ms-participant-managment-app
+          image: 838811465072.dkr.ecr.ap-southeast-2.amazonaws.com/ms_participant_management:develop-bde9b731b7e40f37e7d19c8833f0dfc6393c11bc
           resources:
             requests:
               memory: "512Mi"

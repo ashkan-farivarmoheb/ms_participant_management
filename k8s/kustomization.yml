@@ -3,9 +3,9 @@ commonLabels:
 
 resources:
   # Individual apps
-  - k8sdeployment.yml
-  - k8s/service.yml
-  - k8s/postgresql.yml
-  - k8s/prometheus-sm.yml
+  - myapp-k8s/deployment.yml
+  - myapp-k8s/service.yml
+  - myapp-k8s/postgresql.yml
+  - myapp-k8s/prometheus-sm.yml
 
 patchesJson6902:

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ms_participant_managment-postgresql-pvc
+  name: ms-participant-managment-postgresql-pvc
   namespace: default
 spec:
   accessModes:
@@ -13,10 +13,10 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ms_participant_managment-postgresql
+  name: ms-participant-managment-postgresql
   namespace: default
   labels:
-    app: ms_participant_managment-postgresql
+    app: ms-participant-managment-postgresql
 type: Opaque
 data:
   postgresql-password: NDcwOTlkNDQyMTE2MGIwMzFmMzZhZDM5OGJkMDAxZTllYTIyYWM0OWZjMzE0Yjg1MzVlYjY3ZTViNDU5
@@ -24,32 +24,32 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ms_participant_managment-postgresql
+  name: ms-participant-managment-postgresql
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ms_participant_managment-postgresql
+      app: ms-participant-managment-postgresql
   template:
     metadata:
       labels:
-        app: ms_participant_managment-postgresql
+        app: ms-participant-managment-postgresql
     spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: ms_participant_managment-postgresql-pvc
+            claimName: ms-participant-managment-postgresql-pvc
       containers:
         - name: postgres
           image: postgres:14.5
           env:
             - name: POSTGRES_USER
-              value: ms_participant_managment
+              value: ms-participant-managment
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: ms_participant_managment-postgresql
+                  name: ms-participant-managment-postgresql
                   key: postgresql-password
           ports:
             - containerPort: 5432
@@ -68,10 +68,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms_participant_managment-postgresql
+  name: ms-participant-managment-postgresql
   namespace: default
 spec:
   selector:
-    app: ms_participant_managment-postgresql
+    app: ms-participant-managment-postgresql
   ports:
     - port: 5432

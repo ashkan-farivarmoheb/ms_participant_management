@@ -27,8 +27,8 @@ logSummary() {
 }
 
 default() {
-    suffix=k8s
-    kubectl apply -f ms_participant_managment-${suffix}/
+    # suffix=k8s
+    kubectl apply -f ms_participant_managment/
 }
 
 kustomize() {
