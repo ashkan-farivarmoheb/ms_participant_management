@@ -103,7 +103,8 @@ jobs:
 
       - uses: actions-hub/kubectl@v1.25.4
         env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-          KUBE_CONTEXT: ${{ secrets.KUBE_CONTEXT }}
+          KUBE_HOST: ${{ secrets.KUBE_HOST }}
+          KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
+          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
         with:
           args: get pods
