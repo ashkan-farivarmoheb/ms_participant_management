@@ -15,35 +15,6 @@ spec:
         app: ms-participant-managment
         version: "v1"
     spec:
-      # affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: app
-                      operator: In
-                      values:
-                        - ms-participant-managment
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-      # initContainers:
-        - name: init-ds
-          image: busybox:latest
-          command:
-            - "/bin/sh"
-            - "-c"
-            - |
-              while true
-              do
-                rt=$(nc -z -w 1 ms-participant-managment-postgresql 5432)
-                if [ $? -eq 0 ]; then
-                  echo "DB is UP"
-                  break
-                fi
-                echo "DB is not yet reachable;sleep for 10s before retry"
-                sleep 10
-              done
       containers:
         - name: ms-participant-managment-app
           image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
