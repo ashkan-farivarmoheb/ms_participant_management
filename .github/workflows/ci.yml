@@ -93,7 +93,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -101,10 +100,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - uses: actions-hub/kubectl@v1.25.4
-        env:
-          KUBE_HOST: ${{ secrets.KUBE_HOST }}
-          KUBE_CERTIFICATE: ${{ secrets.KUBE_CERTIFICATE }}
-          KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
         with:
-          args: get pods
+          version: 'v1.25.0'
+        id: install
+        
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name eksdemo1 --region ${{ secrets.AWS_REGION }}
