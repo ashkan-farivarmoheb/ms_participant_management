@@ -93,6 +93,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Variables
+        id: vars
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const tag = context.sha.substring(0,7)
+            const branch = context.ref.split('/').pop()
+            const { owner, repo } = context.repo;
+            core.exportVariable('BRANCH', branch);
+            core.exportVariable('TAG', tag);
+            core.exportVariable('REPOSITORY_NAME', repo);
+
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
