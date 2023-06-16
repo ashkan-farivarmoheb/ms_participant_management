@@ -17,7 +17,14 @@ spec:
     spec:
       containers:
         - name: ms-participant-managment-app
-          image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          image: ECR_REGISTRY/ECR_REPOSITORY:IMAGE_TAG
+          env:
+            - name: ECR_REGISTRY
+              value: $ECR_REGISTRY
+            - name: ECR_REPOSITORY
+              value: $ECR_REPOSITORY
+            - name: IMAGE_TAG
+              value: $IMAGE_TAG
           resources:
             requests:
               memory: "512Mi"
