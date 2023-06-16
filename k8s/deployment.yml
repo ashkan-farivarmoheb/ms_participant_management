@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ms-participant-managment
+  name: ms-participant-managment-deployment
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ms-participant-managment
+      app: ms-participant-managment-label
       version: "v1"
   template:
     metadata:
       labels:
-        app: ms-participant-managment
+        app: ms-participant-managment-label
         version: "v1"
     spec:
       containers:
