@@ -108,3 +108,12 @@ jobs:
         
       - name: Update kube config
         run: aws eks update-kubeconfig --name eksdemo1 --region ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to EKS
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.REPOSITORY_NAME }}
+          TAG: '${{ env.BRANCH }}-${{ env.TAG }}'
+          IMAGE_TAG: '${{ env.BRANCH }}-${{github.sha}}'
+        run: |
+          kubectl apply -f k8s/

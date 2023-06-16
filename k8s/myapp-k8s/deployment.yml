@@ -15,7 +15,7 @@ spec:
         app: ms-participant-managment
         version: "v1"
     spec:
-      affinity:
+      # affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - podAffinityTerm:
@@ -27,7 +27,7 @@ spec:
                         - ms-participant-managment
                 topologyKey: kubernetes.io/hostname
               weight: 100
-      initContainers:
+      # initContainers:
         - name: init-ds
           image: busybox:latest
           command:
@@ -46,7 +46,7 @@ spec:
               done
       containers:
         - name: ms-participant-managment-app
-          image: 838811465072.dkr.ecr.ap-southeast-2.amazonaws.com/ms_participant_management:develop-bde9b731b7e40f37e7d19c8833f0dfc6393c11bc
+          image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           resources:
             requests:
               memory: "512Mi"
