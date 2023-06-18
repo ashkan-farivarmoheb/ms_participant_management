@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms-participant-managment-service
+  name: {{.Values.application.name}}-service
   namespace: default
   labels:
-    app: ms-participant-managment-label
+    app: {{.Values.application.name}}
 spec:
   selector:
-    app: ms-participant-managment
+    app: {{.Values.application.name}}
   ports:
     - name: http
       port: 80
