@@ -28,7 +28,7 @@ spec:
               cpu: "1"
           ports:
             - name: http
-              containerPort: 8081
+              containerPort: 8080
           readinessProbe:
             httpGet:
               path: /management/health/readiness
