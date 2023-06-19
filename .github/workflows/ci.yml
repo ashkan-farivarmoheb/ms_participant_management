@@ -135,6 +135,6 @@ jobs:
         env:
           ECR_REPOSITORY: ${{ env.REPOSITORY_NAME }}
         run: |
-          helm upgrade --install --atomic --timeout 1m app ./app/ -f ./app/values.yaml \
+          helm upgrade --install --atomic --timeout 10m app ./app/ -f ./app/values.yaml \
             --kube-context arn:aws:eks:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:cluster/eksdemo1 --namespace ${{ env.BRANCH }} --create-namespace \
             --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ env.REPOSITORY_NAME }}:${{ env.BRANCH }}-${{github.sha}}
