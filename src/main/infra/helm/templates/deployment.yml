@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.application.name}}-deployment
+  namespace: default
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: {{.Values.application.name}}
+      version: "v1"
+  template:
+    metadata:
+      labels:
+        app: {{.Values.application.name}}
+        version: "v1"
+    spec:
+      containers:
+        - name: {{.Values.application.name}}-app
+          image: {{.Values.image.repository}}
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          ports:
+            - name: http
+              containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /management/health/readiness
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /management/health/liveness
+              port: http
+            initialDelaySeconds: 120
