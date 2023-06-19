@@ -126,7 +126,7 @@ jobs:
       - name: Update kube config
         id: kube-context
         run: | 
-          echo "::set-output context=aws eks update-kubeconfig --name eksdemo1 --region ${{ secrets.AWS_REGION }}"
+          aws eks update-kubeconfig --name eksdemo1 --region ${{ secrets.AWS_REGION }}
 
       - name: Install Helm
         uses: azure/setup-helm@v3
@@ -136,5 +136,5 @@ jobs:
           ECR_REPOSITORY: ${{ env.REPOSITORY_NAME }}
         run: |
           helm upgrade --install --atomic --timeout 1m ms-participant-managment ./src/main/infra/helm/ -f ./src/main/infra/helm/values.yaml \
-            --kube-context ${{ steps.kube-context.outputs.context }} --namespace ${{ env.BRANCH }} --create-namespace \
+            --kube-context arn:aws:eks:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:cluster/eksdemo1 --namespace ${{ env.BRANCH }} --create-namespace \
             --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ env.REPOSITORY_NAME }}:${{ env.BRANCH }}-${{github.sha}}
