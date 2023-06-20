@@ -1,8 +1,8 @@
 replicaCount: 2
 
 image:
-  repository: 864227929192.dkr.ecr.us-east-2.amazonaws.com/rest-api:v1
+  repository: dkr.ecr.us-east-2.amazonaws.com/rest-api:v1
   pullPolicy: Always
 
 application:
-  name: ms-participant-managment
+  name: ms-participant-management

@@ -31,14 +31,14 @@ spec:
               containerPort: 8090
           readinessProbe:
             httpGet:
-              path: /ms-participant-management/actuator/health/readiness
+              path: "{{ printf "/%s/actuator/health/readiness" .Values.application.name }}"
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 6
           livenessProbe:
             httpGet:
-              path: /ms-participant-management/actuator/health/liveness
+              path: "{{ printf "/%s/actuator/health/liveness" .Values.application.name }}"
               port: http
             initialDelaySeconds: 5
             periodSeconds: 5
