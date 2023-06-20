@@ -137,4 +137,5 @@ jobs:
         run: |
           helm upgrade --install --atomic --timeout 5m app ./app/ -f ./app/values.yaml \
             --kube-context arn:aws:eks:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:cluster/eksdemo1 --namespace ${{ env.BRANCH }} --create-namespace \
-            --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ env.REPOSITORY_NAME }}:${{ env.BRANCH }}-${{github.sha}}
+            --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ env.REPOSITORY_NAME }}:${{ env.BRANCH }}-${{github.sha}} \
+            --awet environment=${{ env.BRANCH }}

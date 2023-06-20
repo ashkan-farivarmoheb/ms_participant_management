@@ -1,3 +1,4 @@
+environment: develop
 replicaCount: 2
 
 image:

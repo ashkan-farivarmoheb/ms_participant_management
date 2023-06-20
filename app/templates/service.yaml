@@ -6,11 +6,15 @@ metadata:
   labels:
     app: {{.Values.application.name}}
   annotations:
+  	# Traffic Routing
     service.beta.kubernetes.io/aws-load-balancer-type: nlb    # To create Network Load Balancer
+    service.beta.kubernetes.io/aws-load-balancer-name: {{ .Values.environment }}-{{ .Values.application.name }}
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+    
 spec:
   type: LoadBalancer
   selector:
-    app: {{.Values.application.name}}
+    app: {{ .Values.application.name }}-{{ .Values.environment }}
   ports:
     - name: http
       port: 80
