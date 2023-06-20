@@ -1,0 +1,15 @@
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+server:
+  port: 8090
+  servlet:
+    context-path: /ms-participant-management
