@@ -1,0 +1,1 @@
+delete from ms_participant_management.provider;

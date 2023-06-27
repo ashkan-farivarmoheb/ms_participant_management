@@ -1,9 +1,9 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.1.0'
+	id 'org.springframework.boot' version '3.1.1'
 	id 'io.spring.dependency-management' version '1.1.0'
-	id("com.avast.gradle.docker-compose") version "0.16.12"
-	
+	//id 'org.graalvm.buildtools.native' version '0.9.23'
+	id 'com.avast.gradle.docker-compose' version '0.16.12'
 }
 
 apply plugin: 'docker-compose'
@@ -22,13 +22,38 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-graphql'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.apache.commons:commons-pool2:2.11.1'
+	implementation 'com.esotericsoftware:kryo:5.5.0'
+	implementation 'javax.persistence:javax.persistence-api:2.2'
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	
+	
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	annotationProcessor 'org.projectlombok:lombok:1.18.28'
+	
+	compileOnly 'org.projectlombok:lombok:1.18.28'
+	compileOnly 'org.flywaydb:flyway-core'
+	
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	
+	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'org.postgresql:r2dbc-postgresql'	
+	
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'io.projectreactor:reactor-test'
+	
 	testImplementation 'org.springframework:spring-webflux'
 	testImplementation 'org.springframework.graphql:spring-graphql-test'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:postgresql'
+	testImplementation 'org.testcontainers:r2dbc'
+	
+	testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	
 }
 
 dockerCompose {
@@ -45,6 +70,15 @@ dockerCompose {
 	dockerComposeStopTimeout = java.time.Duration.ofSeconds(10)
 }
 
+def dockerClean = tasks.register('dockerClean') {
+	doLast {
+		exec {
+			executable "sh"
+			args "-c", "docker rm -f \$(docker ps -aq) | true"
+		}
+	}
+}
+
 task startTestEnvironment {
 	dependsOn += ['composeUp']
 }
@@ -52,3 +86,44 @@ task startTestEnvironment {
 task stopTestEnvironment {
 	dependsOn += ['composeDown']
 }
+
+tasks.named('test') {
+	filter {
+        //exclude all tests from a package.
+        includeTestsMatching "*.**.unit.*"
+
+     }
+	useJUnitPlatform()
+}
+
+task componentTest(type: Test) {
+	description = "Run Component Tests"
+    group = "verification"    
+	filter {
+        //exclude all tests from a package.
+        includeTestsMatching "*.**.component.*"
+
+     }
+	useJUnitPlatform()
+}
+
+task blackbox(type: Test) {
+	description = "Run Blackbox Tests"
+    group = "verification"    
+	filter {
+        //exclude all tests from a package.
+        includeTestsMatching "*.**.blackbox.*"
+
+     }
+	useJUnitPlatform()
+}
+
+composeUp.dependsOn(dockerClean)
+tasks.componentTest.mustRunAfter(tasks.test)
+tasks.componentTest.dependsOn(tasks.startTestEnvironment)
+tasks.componentTest.finalizedBy(tasks.stopTestEnvironment)
+
+tasks.blackbox.mustRunAfter(tasks.componentTest)
+tasks.blackbox.dependsOn(tasks.startTestEnvironment)
+tasks.blackbox.finalizedBy(tasks.stopTestEnvironment)
+

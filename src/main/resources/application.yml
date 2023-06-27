@@ -1,15 +1,63 @@
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, env, beans, info, shutdown, configprops, loggers, chaosmonkey
+  simple:
+    metrics:
+      export:
+        enabled: false
   endpoint:
+    shutdown:
+      enabled: true
+      
     health:
       probes:
         enabled: true
       show-details: always
+    metrics:
+      enabled: true
   health:
     livenessstate:
       enabled: true
     readinessstate:
       enabled: true
+  metrics:
+    enable:
+      all: false
+
 server:
   port: 8090
   servlet:
     context-path: /ms-participant-management
+
+spring:
+  application: 
+    name: ms-participant-management
+  flyway:
+    url: jdbc:postgresql://${datasource.host}:${datasource.port}/${datasource.dbname}
+    user: ${datasource.username}
+    password: ${datasource.password}
+    locations: ["classpath:db/migration"]
+    baseline-on-migrate: true
+    default-schema: ms_participant_management        
+    enabled: true
+  r2dbc:
+    url: r2dbc:postgresql://${datasource.host}:${datasource.port}/${datasource.dbname}
+    username: ${datasource.username}
+    password: ${datasource.password}
+    properties:
+      schema: ms_participant_management
+    pool:
+      enabled: true
+      initial-size: 5
+      max-size: 20
+      min-idle: 5
+  data:
+    redis:
+      host: ${redis.host}
+      password: ${redis.password}
+      port: ${redis.port}
+      clusterEnabled: false
+      provider:
+        ttl: 300

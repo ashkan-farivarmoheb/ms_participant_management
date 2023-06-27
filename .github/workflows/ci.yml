@@ -54,15 +54,20 @@ jobs:
       with:
         arguments: test
     
-    - name: start test environment
-      id: test-containers-up
+    - name: Component Test
+      id: component-test
       run: |
-        ./gradlew startTestEnvironment
+        ./gradlew componentTest
 
-    - name: stop test environment
-      id: test-containers-down
-      run: |
-        ./gradlew stopTestEnvironment
+    # - name: start test environment
+    #   id: test-containers-up
+    #   run: |
+    #     ./gradlew startTestEnvironment
+
+    # - name: stop test environment
+    #   id: test-containers-down
+    #   run: |
+    #     ./gradlew stopTestEnvironment
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
