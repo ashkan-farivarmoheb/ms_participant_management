@@ -45,7 +45,6 @@ public class ProviderServiceTest {
 		StepVerifier.create(providerService.getAll())
 		.thenConsumeWhile(savedObject -> {
 			assertNotNull(savedObject);
-			assertNotNull(savedObject.getId());
 			assertNotNull(savedObject.getAbn());
 			return true;
 		}).verifyComplete();

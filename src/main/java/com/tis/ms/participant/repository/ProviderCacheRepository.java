@@ -50,9 +50,31 @@ public class ProviderCacheRepository {
 		return connection.stringCommands().set(setcommands)
 				.flatMap(response -> Flux.just(valueSerializer.read(response.getInput().getValue())))
 				.flatMap(object -> Flux.just(ProviderCache.class.cast(object)))
-				.doOnError(e -> log.error("message=\" Couldn't save to Cache\", \"{}\"", e))
+				.doOnError(e -> log.error("message=\" Couldn't saveAll to Cache\", \"{}\"", e))
 				.doOnComplete(() -> log.info("message=\"Invoked saveAll\", elapsed_time_ms=\"{}\"",
 						System.currentTimeMillis() - start));
+	}
+
+	public Mono<ProviderCache> save(ProviderCache provider) {
+
+		long start = System.currentTimeMillis();
+		ReactiveRedisConnection connection = reactiveRedisTemplate.getConnectionFactory().getReactiveConnection();
+		SerializationPair<String> keySerializer = reactiveRedisTemplate.getSerializationContext()
+				.getKeySerializationPair();
+		SerializationPair<Object> valueSerializer = reactiveRedisTemplate.getSerializationContext()
+				.getValueSerializationPair();
+
+		String key = createKey().apply(provider.getId().toString());
+		var setcommand = Mono.just(SetCommand.set(keySerializer.write(key)).value(valueSerializer.write(provider))
+				.expiring(Expiration.from(Duration.ofSeconds(timeToLeave)))
+				.withSetOption(RedisStringCommands.SetOption.ifAbsent()));
+
+		return Mono.from(connection.stringCommands().set(setcommand)
+				.flatMap(response -> Flux.just(valueSerializer.read(response.getInput().getValue())))
+				.flatMap(object -> Flux.just(ProviderCache.class.cast(object)))
+				.doOnError(e -> log.error("message=\" Couldn't save to Cache\", \"{}\"", e))
+				.doOnComplete(() -> log.info("message=\"Invoked save \", elapsed_time_ms=\"{}\"",
+						System.currentTimeMillis() - start)));
 	}
 
 	public Flux<ProviderCache> getAll() {
@@ -72,6 +94,16 @@ public class ProviderCacheRepository {
 				.doOnComplete(() -> log.info("message=\"Invoked getAll\", elapsed_time_ms=\"{}\"",
 						System.currentTimeMillis() - start));
 
+	}
+
+	public Mono<Void> delete(Flux<ProviderCache> provider) {
+		long start = System.currentTimeMillis();
+
+		return provider.flatMap(p -> {
+			String key = createKey().apply(p.getId().toString());
+			return reactiveRedisTemplate.delete(key);
+		}).doOnError(e -> log.error("message=\" Couldn't delete from Cache\", \"{}\"", e)).doOnComplete(() -> log
+				.info("message=\"Invoked delete\", elapsed_time_ms=\"{}\"", System.currentTimeMillis() - start)).then();
 	}
 
 	private Function<String, String> createKey() {

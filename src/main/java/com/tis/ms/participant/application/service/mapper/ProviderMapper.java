@@ -20,4 +20,6 @@ public abstract class ProviderMapper {
 	
 	@Mapping(source = "id", target = "id")
 	public abstract Provider toProvider(ProviderCache cache);
+	
+	public abstract ProviderDto toProviderDto(ProviderCache cache);
 }
