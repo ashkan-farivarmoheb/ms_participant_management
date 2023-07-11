@@ -37,12 +37,26 @@ jobs:
             core.exportVariable('TAG', tag);
             core.exportVariable('REPOSITORY_NAME', repo);
             
-      - name: AWS Credentials
+      - name: AWS Credentials Nonprod
+        id: aws-credentials-nonprod
+        if:  | 
+          inputs.target-env == 'Development' || 
+          inputs.target-env == 'SIT1' || 
+          inputs.target-env == 'SIT2'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          
+      - name: AWS Credentials Prod
+        id: aws-credentials-prod
+        if:  inputs.target-env == 'Production'
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
+          aws-region: ${{ secrets.AWS_REGION_PROD }}
           
       - name: Login to Amazon ECR
         id: login-ecr
@@ -63,7 +77,10 @@ jobs:
         uses: azure/setup-helm@v3
         
       - name: Deploy to nonprod ${{ inputs.target-env }}
-        if:  inputs.target-env == 'Development'
+        if:  | 
+          inputs.target-env == 'Development' || 
+          inputs.target-env == 'SIT1' || 
+          inputs.target-env == 'SIT2'
         id: deploy-to-nonprod
         env:
           ECR_REPOSITORY: ${{ env.REPOSITORY_NAME }}
@@ -74,12 +91,12 @@ jobs:
             --set environment=${{ inputs.target-env }}
             
       - name: Deploy to ${{ inputs.target-env }}
-        if:  inputs.target-env == 'Development'
+        if:  inputs.target-env == 'Production'
         id: deploy-to-prod
         env:
           ECR_REPOSITORY: ${{ env.REPOSITORY_NAME }}
         run: |
           helm upgrade --install --atomic --timeout 5m app ./app/ -f ./app/values.yaml \
-            --kube-context arn:aws:eks:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:cluster/eks-${{ inputs.target-env }} --namespace ${{ inputs.target-env }} --create-namespace \
+            --kube-context arn:aws:eks:${{ secrets.AWS_REGION_PROD }}:${{ secrets.AWS_ACCOUNT_ID_PROD }}:cluster/eks-${{ inputs.target-env }} --namespace ${{ inputs.target-env }} --create-namespace \
             --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ env.REPOSITORY_NAME }}:${{ env.BRANCH }}-${{github.sha}} \
             --set environment=${{ inputs.target-env }}
