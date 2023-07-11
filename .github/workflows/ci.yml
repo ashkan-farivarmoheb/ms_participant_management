@@ -93,7 +93,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        target: [Development, Production ]
+        target: [Development, SIT1, SIT2, Production ]
     uses: ./.github/workflows/cd.yml
     with:
       target-env: ${{ matrix.target }}
